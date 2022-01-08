@@ -1,3 +1,13 @@
+#if (defined(WIN32) || defined(_WIN32))
+#include <caml/mlvalues.h>
+#include "caml/fail.h"
+CAMLprim value bigstring_init_stub(void* v_unit) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#undef JSC_NOSIGPIPE
+#else
+
 #include "config.h"
 
 #define _FILE_OFFSET_BITS 64
@@ -735,3 +745,5 @@ CAMLprim value bigstring_sendmsg_nonblocking_no_sigpipe_stub(
 #warning "Neither MSG_NOSIGNAL nor SO_NOSIGPIPE defined; bigstring_send{,msg}_noblocking_no_sigpipe not implemented"
 #warning "Platform not supported. Please report this."
 #endif /* JSC_MSG_NOSIGNAL || JSC_SO_NOSIGPIPE */
+
+#endif

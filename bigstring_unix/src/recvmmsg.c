@@ -1,3 +1,12 @@
+#if (defined(WIN32) || defined(_WIN32))
+int recvmmsg_assume_fd_is_nonblocking(
+  int v_fd, void *iovecs, unsigned count, int v_srcs, void *hdrs)
+{
+  return 0;
+}
+#undef JSC_NOSIGPIPE
+#else
+
 #define _GNU_SOURCE             /* recvmmsg */
 
 #include <stdio.h>
@@ -102,3 +111,4 @@ int recvmmsg_assume_fd_is_nonblocking(
 }
 
 #endif  /* JSC_RECVMMSG */
+#endif

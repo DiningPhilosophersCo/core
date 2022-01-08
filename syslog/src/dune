@@ -1,2 +1,2 @@
 (library (name syslog) (public_name core.syslog) (libraries core)
- (c_names syslog_stubs) (preprocess (pps ppx_jane)))
+ (c_flags (:standard -I/usr/include)) (c_names syslog_stubs) (preprocess (pps ppx_jane)))

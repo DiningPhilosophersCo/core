@@ -3,11 +3,14 @@
 #define _GNU_SOURCE
 
 #include <string.h>
+#if (defined(WIN32) || defined(_WIN32))
+#else
 #include <sys/types.h>
 #include <grp.h>
 #include <pwd.h>
 #include <assert.h>
 #include <errno.h>
+#endif
 
 #include <caml/mlvalues.h>
 #include <caml/alloc.h>
@@ -19,6 +22,55 @@
 #include <caml/unixsupport.h>
 
 
+/*$ generate gr gid */
+
+#if (defined(WIN32) || defined(_WIN32))
+static value pw_entry_alloc(struct passwd *entry)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static value gr_entry_alloc (struct group *entry)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_getgrgid_r(value v_gid, value v_buf)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/*$ generate pw uid */
+
+CAMLprim value core_unix_getpwuid_r(value v_uid, value v_buf)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/*$ generate pw nam */
+
+CAMLprim value core_unix_getpwnam_r(value v_nam, value v_buf)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/*$ generate gr nam */
+
+CAMLprim value core_unix_getgrnam_r(value v_nam, value v_buf)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 static value pw_entry_alloc(struct passwd *entry)
 {
   CAMLparam0();
@@ -53,8 +105,6 @@ static value gr_entry_alloc (struct group *entry)
   CAMLreturn(res);
 }
 
-
-/*$ generate gr gid */
 
 CAMLprim value core_unix_getgrgid_r(value v_gid, value v_buf)
 {
@@ -176,5 +226,4 @@ CAMLprim value core_unix_getgrnam_r(value v_nam, value v_buf)
     }
   }
 }
-
-
+#endif

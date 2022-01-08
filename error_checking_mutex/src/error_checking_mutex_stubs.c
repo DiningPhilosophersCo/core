@@ -4,6 +4,7 @@
 #include <pthread.h>
 
 #include "ocaml_utils.h"
+#include "caml/fail.h"
 
 #define Mutex_val(v) (* ((pthread_mutex_t **) Data_custom_val(v)))
 
@@ -16,13 +17,14 @@ static void caml_pthread_check(int retcode, char *msg)
   value str;
 
   if (retcode == 0) return;
-
+#if !(defined(WIN32) || defined(_WIN32))
 #ifdef __GLIBC__
   err = strerror_r(retcode, err_buf, err_buf_len);
 #else
   if (strerror_r(retcode, err_buf, err_buf_len) == -1)
     uerror("strerror_r", Nothing);
   err = err_buf;
+#endif
 #endif
 
   msglen = strlen(msg);
@@ -35,6 +37,16 @@ static void caml_pthread_check(int retcode, char *msg)
 #undef err_buf_len
 }
 
+#if (defined(WIN32) || defined(_WIN32))
+static void caml_mutex_finalize(value v_mtx) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+static int caml_mutex_condition_compare(value v_mtx1, value v_mtx2) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 static void caml_mutex_finalize(value v_mtx)
 {
   pthread_mutex_t *mtx = Mutex_val(v_mtx);
@@ -48,6 +60,7 @@ static int caml_mutex_condition_compare(value v_mtx1, value v_mtx2)
   pthread_mutex_t *mtx2 = Mutex_val(v_mtx2);
   return mtx1 == mtx2 ? 0 : mtx1 < mtx2 ? -1 : 1;
 }
+#endif
 
 static struct custom_operations caml_mutex_ops = {
   "_mutex",
@@ -64,6 +77,13 @@ static struct custom_operations caml_mutex_ops = {
 #endif
 };
 
+#if (defined(WIN32) || defined(_WIN32))
+CAMLprim value unix_create_error_checking_mutex(value __unused v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 #if defined(_POSIX_THREADS) && _POSIX_THREADS >= 200112L
 CAMLprim value unix_create_error_checking_mutex(value __unused v_unit)
 {
@@ -83,4 +103,5 @@ CAMLprim value unix_create_error_checking_mutex(value __unused v_unit)
 }
 #else
 #warning "_POSIX_THREADS not defined or < 200112; unix_create_error_checking_mutex not available"
+#endif
 #endif

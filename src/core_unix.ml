@@ -1347,7 +1347,7 @@ let clear_nonblock = unary_fd Unix.clear_nonblock
 let set_close_on_exec = unary_fd Unix.set_close_on_exec
 let clear_close_on_exec = unary_fd Unix.clear_close_on_exec
 
-module Open_flags = struct
+(* module Open_flags = struct
   external append    : unit -> Int63.t = "unix_O_APPEND"
   external async     : unit -> Int63.t = "unix_O_ASYNC"
   external cloexec   : unit -> Int63.t = "unix_O_CLOEXEC"
@@ -1450,9 +1450,9 @@ module Open_flags = struct
     in
     Sexp.List (prefix @ rest)
   ;;
-end
+end *)
 
-let fcntl_getfl, fcntl_setfl =
+(* let fcntl_getfl, fcntl_setfl =
   let module M = struct
     external unix_fcntl : Unix.file_descr -> Int63.t -> Int63.t -> Int63.t = "core_unix_fcntl"
     external getfl : unit -> Int63.t = "unix_F_GETFL"
@@ -1469,7 +1469,7 @@ let fcntl_getfl, fcntl_setfl =
     assert (result = Int63.zero);
   in
   fcntl_getfl, fcntl_setfl
-;;
+;; *)
 
 let mkdir ?(perm=0o777) dirname =
   improve (fun () -> Unix.mkdir dirname ~perm)

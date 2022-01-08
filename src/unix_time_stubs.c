@@ -27,6 +27,22 @@
 
 #ifdef JSC_POSIX_TIMERS
 
+#if (defined(WIN32) || defined(_WIN32))
+value caml_clock_getres (value clock_type) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+value caml_clock_gettime (value clock_type) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+clockid_t caml_clockid_t_of_caml (value clock_type) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 clockid_t caml_clockid_t_of_caml (value clock_type) {
   switch (Int_val(clock_type)) {
     case 0: return CLOCK_REALTIME;
@@ -37,6 +53,7 @@ clockid_t caml_clockid_t_of_caml (value clock_type) {
 
   caml_failwith ("invalid Clock.t");
 }
+
 
 value caml_clock_getres (value clock_type) {
   struct timespec tp;
@@ -49,9 +66,36 @@ value caml_clock_gettime (value clock_type) {
   clock_gettime (caml_clockid_t_of_caml (clock_type), &tp);
   return (caml_alloc_int63 (((int64_t)tp.tv_sec * 1000 * 1000 * 1000) + (int64_t)tp.tv_nsec));
 }
+#endif
+
 
 #endif /* JSC_POSIX_TIMERS */
 
+#if (defined(WIN32) || defined(_WIN32))
+CAMLprim value core_timegm (value tm_val) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+CAMLprim value core_time_ns_strftime(value v_tm, value v_fmt) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+CAMLprim value core_time_ns_nanosleep(value v_seconds)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+CAMLprim value core_gmtime(value t)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+CAMLprim value core_localtime(value t)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 static value alloc_tm(struct tm *tm)
 {
   value res;
@@ -150,3 +194,5 @@ CAMLprim value core_time_ns_nanosleep(value v_seconds)
 
 WRAP_TIME_FUN(localtime, "localtime")
 WRAP_TIME_FUN(gmtime, "gmtime")
+
+#endif

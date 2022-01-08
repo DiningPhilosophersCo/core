@@ -11,42 +11,46 @@
 #elif defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #include <sys/socket.h>
 #endif
+#if (defined(WIN32) || defined(_WIN32))
+#else
 #include <sys/uio.h>
 #include <sys/utsname.h>
 #include <sys/file.h>
-#include <pwd.h>
-#include <dirent.h>
-#include <errno.h>
-#include <limits.h>
-#include <net/if.h>
-#include <netinet/in.h>
-#include <signal.h>
-#include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/resource.h>
-#include <grp.h>
 #include <sys/select.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/mman.h>
+#include <pwd.h>
+#include <net/if.h>
+#include <netinet/in.h>
+#include <grp.h>
 #include <fnmatch.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <ifaddrs.h>
+/* makedev */
+#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
+/* The BSDs expose the definition for this macro via <sys/types.h>. */
+#else
+#include <sys/sysmacros.h>
+#include "unix_utils.h"
+#endif
+#endif
+#include <dirent.h>
+#include <errno.h>
+#include <limits.h>
+#include <signal.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <time.h>
 #include <unistd.h>
 #include <sched.h>
 #include <fcntl.h>
-#include <sys/mman.h>
 #include <math.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <ifaddrs.h>
 
-/* makedev */
-#if defined(__APPLE__) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
-/* The BSDs expose the definition for this macro via <sys/types.h>. */
-#else
-#include <sys/sysmacros.h>
-#endif
 
 #if defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
 #define stat64 stat
@@ -55,7 +59,6 @@
 #endif
 
 #include "ocaml_utils.h"
-#include "unix_utils.h"
 #include "config.h"
 #include "timespec.h"
 #include "thread_id.h"
@@ -64,6 +67,482 @@
 #include <wordexp.h>
 #endif
 
+
+#if (defined(WIN32) || defined(_WIN32))
+CAMLprim value core_unix_error_of_code(value code)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_code_of_unix_error(value error)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_error_stub(value v_errcode, value v_cmdname, value cmd_arg)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_fcntl (value fd, value v_cmd, value v_arg) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+int core_unix_close_durably(int fd)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+void core_unix_close_on_exec(int fd)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+static inline char * core_copy_to_c_string(value v_str)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_setpwent(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_endpwent(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_getpwent(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_flock(value v_blocking, value v_fd, value v_lock_type)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_mknod_stub(
+  value v_pathname, value v_mode, value v_perm, value v_major, value v_minor)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_sync(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_fsync(value v_fd)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_fdatasync(value v_fd)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_dirfd(value v_dh)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_readdir_ino_stub(value v_dh)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_read_assume_fd_is_nonblocking_stub(
+  value v_fd, value v_buf, value v_pos, value v_len)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_write_assume_fd_is_nonblocking_stub(
+  value v_fd, value v_buf, value v_pos, value v_len)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_writev_assume_fd_is_nonblocking_stub(
+  value v_fd, value v_iovecs, value v_count)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_writev_stub(value v_fd, value v_iovecs, value v_count)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+
+static inline void fdlist_to_fdset(value fdlist, fd_set *fdset, int *maxfd)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static inline value fdset_to_fdlist(value fdlist, fd_set *fdset)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static inline void decode_sigset(value vset, value set)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_pselect_stub(
+  value v_rfds, value v_wfds, value v_efds, value v_timeout, value v_sigmask)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_clock_gettime(value v_cl)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_clock_settime(value v_cl, value v_t)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_clock_getres(value v_cl)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static inline pthread_t pthread_t_val(value __unused v_tid)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_clock_process_cputime_id_stub(value __unused v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_clock_thread_cputime_id_stub(value __unused v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* Resource limits */
+
+CAMLprim value core_unix_getrlimit(value v_resource)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_setrlimit(value v_resource, value v_limits)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* Resource usage */
+
+CAMLprim value core_unix_getrusage(value v_who)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+ }
+
+/* System configuration */
+
+CAMLprim value core_unix_sysconf(value v_name)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+/* Pathname resolution */
+
+/* Seems like a sane approach to getting a reasonable bound for the
+   maximum path length */
+CAMLprim value core_unix_realpath(value v_path)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+
+}
+
+
+/* Temporary file and directory creation */
+
+static inline void init_mktemp(char *loc, char *buf, value v_path)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mkstemp(value v_path)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mkdtemp(value v_path)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* Signal handling */
+
+CAMLprim value core_unix_abort(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* User id, group id management */
+
+CAMLprim value core_unix_initgroups(value v_user, value v_group)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_getgrouplist(value v_user, value v_group)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+/* Globbing and shell string expansion */
+
+CAMLprim value core_unix_fnmatch_make_flags(value v_flags)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_fnmatch(value v_flags, value v_glob, value v_str)
+{
+  caml_failwith("not implemented for win32"); return Val_unit;
+}
+
+/* System information */
+
+CAMLprim value core_unix_uname(value v_unit __unused)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* Additional IP functionality */
+
+CAMLprim value core_unix_if_indextoname(value v_index)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mcast_modify (value v_action,
+                                       value v_ifname_opt,
+                                       value v_source_opt,
+                                       value v_fd,
+                                       value v_sa)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+
+CAMLprim value core_unix_mcast_get_ttl(value v_socket)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mcast_set_ttl(value v_socket, value v_ttl)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mcast_set_ifname(value v_socket, value v_ifname)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mcast_get_loop(value v_socket)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_mcast_set_loop(value v_socket, value v_loop)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_nice(value v_inc)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_unsetenv(value var)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+static int mman_mcl_flags_table[] = {  };
+
+CAMLprim value core_unix_mlockall(value v_flags)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_munlockall()
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static value alloc_tm(struct tm *tm)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_strptime(value v_fmt, value v_s)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_remove(value v_path)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_gettid(value v_unit __unused)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+static value
+sockaddr_to_caml_string_of_octets(struct sockaddr* sa, int family)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static value
+alloc_ifaddrs(struct ifaddrs* ifap, value family_variant)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+/* THE ORDERING OF THESE CONSTANTS MUST MATCH core_unix.ml!!! */
+static uint32_t iff_table [] = {
+};
+
+CAMLprim value
+core_unix_iff_to_int(value v_iff)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value
+core_unix_getifaddrs(value v_unit)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value core_unix_inet4_addr_of_int32(value v) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_inet4_addr_to_int32_exn(value v) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_inet4_addr_of_int63(value v) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_inet4_addr_to_int63_exn(value v) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_unix_sched_setscheduler(
+  value v_pid, value v_policy, value v_priority)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 CAMLprim value core_unix_error_of_code(value code)
 {
   return unix_error_of_code(Int_val(code));
@@ -1636,3 +2115,4 @@ CAMLprim value core_unix_inet4_addr_to_int63_exn(value v) {
   addr = GET_INET_ADDR(v);
   CAMLreturn(caml_alloc_int63(htonl(addr.s_addr)));
 }
+#endif

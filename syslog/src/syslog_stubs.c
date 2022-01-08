@@ -1,6 +1,8 @@
 #include <string.h>
+#if (defined(WIN32) || defined(_WIN32))
+# else
 #include <syslog.h>
-
+#endif
 #include <caml/mlvalues.h>
 #include <caml/memory.h>
 #include <caml/signals.h>
@@ -9,6 +11,56 @@
 #define Val_none Val_int(0)
 #define Some_val(v) Field(v, 0)
 
+
+#if (defined(WIN32) || defined(_WIN32))
+static int log_open_options[] = {
+};
+
+CAMLprim value core_syslog_open_option_to_int(value v_open_option) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static int log_facilities[] = {
+};
+
+CAMLprim value core_syslog_facility_to_int(value v_facility) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+static int log_levels[] = {
+};
+
+CAMLprim value core_syslog_level_to_int(value v_level) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+/* XXX: WARNING: this function leaks memory if v_ident is not None!
+   No way around that if syslog is called in a multi-threaded environment!
+   Therefore it shouldn't be called too often.  What for, anyway? */
+CAMLprim value core_syslog_openlog(value v_ident, value v_open_option, value v_facility) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+/* A priority is a level | facility.  See syslog(3). */
+CAMLprim value core_syslog_syslog(value v_priority, value v_message) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_syslog_closelog() {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value core_syslog_setlogmask(value v_mask) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
 static int log_open_options[] = {
   /* THESE MUST STAY IN THE SAME ORDER AS IN syslog.ml!!! */
   LOG_PID, LOG_CONS, LOG_ODELAY, LOG_NDELAY, LOG_NOWAIT, LOG_PERROR
@@ -84,3 +136,4 @@ CAMLprim value core_syslog_setlogmask(value v_mask) {
   setlogmask(Int_val(v_mask));
   return Val_unit;
 }
+#endif

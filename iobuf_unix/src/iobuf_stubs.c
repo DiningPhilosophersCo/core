@@ -1,9 +1,3 @@
-#include "config.h"
-#include "iobuf.h"
-#include "unix_utils.h"
-
-#include <arpa/inet.h>
-
 #include <caml/mlvalues.h>
 #include <caml/memory.h>
 #include <caml/alloc.h>
@@ -11,6 +5,41 @@
 #include <caml/callback.h>
 #include <caml/fail.h>
 #include <caml/bigarray.h>
+
+#if (defined(WIN32) || defined(_WIN32))
+CAMLprim value iobuf_recvmmsg_ctx(value v_iobufs)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value
+iobuf_recvmmsg_assume_fd_is_nonblocking_stub
+(value v_fd, value v_iobufs, value v_recvmmsg_ctx)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+
+CAMLprim value
+iobuf_unsafe_pokef_double
+(value v_iobuf, value v_fmt, value v_limit, double d_val)
+{
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+
+CAMLprim value iobuf_unsafe_pokef_double_bytecode(value* vals, value nvals) {
+  caml_failwith("not implemented for win32");
+  return Val_unit;
+}
+#else
+#include "config.h"
+#include "iobuf.h"
+#include "unix_utils.h"
+
+#include <arpa/inet.h>
 
 
 #include <errno.h>
@@ -167,3 +196,4 @@ CAMLprim value iobuf_unsafe_pokef_double_bytecode(value* vals, value nvals) {
   assert(nvals = 4);
   return iobuf_unsafe_pokef_double(vals[0], vals[1], vals[2], Double_val(vals[3]));
 }
+#endif

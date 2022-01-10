@@ -25,7 +25,7 @@ module Make (M : Arg) () = struct
   (* The only reason to have one of these per functor invocation is to make it trivial to
      get the type right. *)
   let preallocated_errnos : (_, Unix_error.t) Result.t array =
-    Array.init 64 ~f:(fun i -> Error (Unix_error.of_errno i))
+    if Sys.unix then Array.init 64 ~f:(fun i -> Error (Unix_error.of_errno i)) else [||]
   ;;
   (* Since we return [-errno] from C, we implicitly rely on there not being a 0 [errno].
      However, we have 0 in [preallocated_errnos], partly so we can index directly by

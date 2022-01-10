@@ -1342,7 +1342,7 @@ module Cidr : sig
 
   (** IPv4 multicast address can be represented by the CIDR prefix 224.0.0.0/4,
       (i.e. addresses from 224.0.0.0 to 239.255.255.255, inclusive) *)
-  val multicast : t
+  val multicast : t option
 
   (** Is the given address inside the given Cidr.t?  Note that the broadcast and network
       addresses are considered valid so [does_match 10.0.0.0/8 10.0.0.0] is true. *)

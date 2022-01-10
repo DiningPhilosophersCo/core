@@ -1983,9 +1983,9 @@ module Passwd = struct
       (fun s -> Getbyuid s)
   ;;
 
-  let pwdb_lock = Error_checking_mutex.create () ;;
 
   let getpwents () =
+    let pwdb_lock = Error_checking_mutex.create () in
     Error_checking_mutex.critical_section pwdb_lock ~f:(fun () ->
       begin
         Low_level.setpwent ();
@@ -2310,7 +2310,7 @@ module Cidr = struct
     | exception _ -> false (* maybe they tried to use IPv6 *)
     | address     -> does_match_int32 t address
 
-  let multicast = of_string "224.0.0.0/4"
+  let multicast = if Sys.unix then Some (of_string "224.0.0.0/4") else None
 
   let is_subset t ~of_ =
     bits of_ <= bits t
